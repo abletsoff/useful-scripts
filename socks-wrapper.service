@@ -1,0 +1,9 @@
+[Unit]
+Description=Redsocks wrapper
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/home/andrew/Documents/scripts/useful-scripts/socks-wrapper.sh start
+ExecStart=/usr/bin/sshpass -p password ssh -N -D 127.0.0.1:9051 -o StrictHostKeyChecking=no andrew@win7.local
+ExecStop=/home/andrew/Documents/scripts/useful-scripts/socks-wrapper.sh stop
