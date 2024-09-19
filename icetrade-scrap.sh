@@ -3,10 +3,12 @@
 not_interactive="false"
 main_url="https://icetrade.by/search/aucArchive?search_text=&zakup_type%5B1%5D=1&zakup_type%5B2%5D=1&auc_num=&okrb=&participant=&establishment=0&industries=&period=&created_from=&created_to=&request_end_from=&request_end_to=&t%5BTrade%5D=1&t%5BeTrade%5D=1&t%5BsocialOrder%5D=1&t%5BsingleSource%5D=1&t%5BAuction%5D=1&t%5BRequest%5D=1&t%5BcontractingTrades%5D=1&t%5Bnegotiations%5D=1&t%5BOther%5D=1&r%5B1%5D=1&r%5B2%5D=2&r%5B7%5D=7&r%5B3%5D=3&r%5B4%5D=4&r%5B6%5D=6&r%5B5%5D=5&sort=date%3Adesc&sbm=1&onPage=100&p="
 
-# Change this
 f_print_help () {
-    echo -e "Usage: icetrade_scrapping.sh <pages> <domain>\n" \
-        "-h\t\tdisplay this help and exit\n"
+    echo -e "  Usage: icetrade_scrapping.sh <number of pages> <organization name>\n" \
+            " Example: icetrade-scrap.sh 12 'зао «бсб банк»'\n\n" \
+            " 1. Go to $main_url\n" \
+            " 2. Validate that <organization name> is valid (e.g. 'ОАО «БМРЦ»)'\n" \
+            " 3. Check <number of pages> at the end of HTML pages\n"
 }
 
 f_output () {
