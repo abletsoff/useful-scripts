@@ -1,8 +1,8 @@
 #!/bin/bash
 
-supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan')
-base_url="http://dojo.enterra.ln:8080/api/v2"
-auth_header="Authorization: Token $DEFECTDOJO_API_KEY"
+supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan')
+base_url="http://localhost:8080/api/v2"
+auth_header="Authorization: Token $DEFECTDOJO_API_KEY_LOCAL"
 
 f_print_help () {
     echo -e " DAST results upload to DefectDojo\n\n" \
@@ -11,6 +11,7 @@ f_print_help () {
     "-f [File name] File name of DAST report\n" \
     "-t [Tool name] DAST tool name (e.g. BurpSuite, Zap)\n" \
     "-p [Product name] DefectDojo product name\n" \
+    "-e [Engagement ID] DefectDojo engagement id" \
     "-l \t\tList of supported DAST tools"
 }
 
@@ -57,7 +58,7 @@ f_create_engagement () {
 }
 
 f_upload_scan () {
-    curl -X POST "$base_url/import-scan/" \
+    curl -s -X POST "$base_url/import-scan/" \
         -H "$auth_header" -H "Content-Type: multipart/form-data" \
         -F "scan_date=$(date '+%Y-%m-%d')" -F "engagement=$engagement_id" \
         -F "scan_type=$tool_name" \
@@ -79,13 +80,14 @@ f_tool_name () {
     fi
 }
 
-while getopts "hf:t:p:l" opt; do
+while getopts "hf:t:p:e:l" opt; do
     case $opt in
         h) f_print_help
            exit;;
         f) filename="$OPTARG";;
         t) tool_slang="$OPTARG";;
         p) product_name="$OPTARG";;
+        e) engagement_id="$OPTARG";;
         l) f_print_tools
            exit;;
     esac
@@ -97,5 +99,9 @@ fi
 
 f_tool_name
 f_get_product_id
-f_create_engagement
+if [[ $engagement_id == "" ]]; then
+    f_create_engagement
+fi
+echo "Engagement: $engagement_id"
+
 f_upload_scan
