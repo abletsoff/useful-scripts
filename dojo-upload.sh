@@ -1,6 +1,6 @@
 #!/bin/bash
 
-supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan' 'OpenVAS Parser' 'Ubuntu OVAL')
+supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan' 'OpenVAS Parser' 'Ubuntu OVAL' 'Snyk Scan' 'Trivy Scan')
 base_url="$DEFECTDOJO_API_URL"
 auth_header="Authorization: Token $DEFECTDOJO_API_KEY"
 
@@ -11,6 +11,7 @@ f_print_help () {
     "-f [File name] File name of DAST report\n" \
     "-t [Tool name] DAST tool name (e.g. BurpSuite, Zap)\n" \
     "-p [Product name] DefectDojo product name\n" \
+    "-s [Service name] Service within product\n" \
     "-e [Engagement ID] DefectDojo engagement id" \
     "-l \t\tList of supported DAST tools"
 }
@@ -60,14 +61,27 @@ f_create_engagement () {
 }
 
 f_upload_scan () {
-    curl -s -k -X POST "$base_url/import-scan/" \
-        -H "$auth_header" -H "Content-Type: multipart/form-data" \
-        -F "scan_date=$(date '+%Y-%m-%d')" -F "engagement=$engagement_id" \
-        -F "scan_type=$tool_name" \
-        -F "deduplication_on_engagement=false" \
-        -F "close_old_findings=true" \
-        -F "close_old_findings_product_scope=true" \
-        -F "file=@$filename"
+    if [[ "$service_name" == "" ]]; then
+        curl -s -k -X POST "$base_url/import-scan/" \
+            -H "$auth_header" -H "Content-Type: multipart/form-data" \
+            -F "scan_date=$(date '+%Y-%m-%d')" -F "engagement=$engagement_id" \
+            -F "scan_type=$tool_name" \
+            -F "deduplication_on_engagement=false" \
+            -F "close_old_findings=true" \
+            -F "close_old_findings_product_scope=true" \
+            -F "file=@$filename"
+    else
+        curl -s -k -X POST "$base_url/import-scan/" \
+            -H "$auth_header" -H "Content-Type: multipart/form-data" \
+            -F "scan_date=$(date '+%Y-%m-%d')" -F "engagement=$engagement_id" \
+            -F "scan_type=$tool_name" \
+            -F "deduplication_on_engagement=false" \
+            -F "close_old_findings=true" \
+            -F "close_old_findings_product_scope=true" \
+            -F "service=$service_name" \
+            -F "file=@$filename"
+    fi
+
     
 }
 f_tool_name () {
@@ -82,7 +96,7 @@ f_tool_name () {
     fi
 }
 
-while getopts "hf:t:p:e:l" opt; do
+while getopts "hf:t:p:e:s:l" opt; do
     case $opt in
         h) f_print_help
            exit;;
@@ -90,6 +104,7 @@ while getopts "hf:t:p:e:l" opt; do
         t) tool_slang="$OPTARG";;
         p) product_name="$OPTARG";;
         e) engagement_id="$OPTARG";;
+        s) service_name="$OPTARG";;
         l) f_print_tools
            exit;;
     esac
