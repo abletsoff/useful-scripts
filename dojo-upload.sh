@@ -1,6 +1,6 @@
 #!/bin/bash
 
-supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan' 'OpenVAS Parser' 'Ubuntu OVAL' 'Snyk Scan' 'Trivy Scan')
+supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan' 'OpenVAS Parser' 'Ubuntu OVAL' 'Snyk Scan' 'Trivy Scan' 'PHP Version Audit' 'Semgrep JSON Report')
 base_url="$DEFECTDOJO_API_URL"
 auth_header="Authorization: Token $DEFECTDOJO_API_KEY"
 
@@ -11,8 +11,8 @@ f_print_help () {
     "-f [File name] File name of DAST report\n" \
     "-t [Tool name] DAST tool name (e.g. BurpSuite, Zap)\n" \
     "-p [Product name] DefectDojo product name\n" \
-    "-s [Service name] Service within product\n" \
-    "-e [Engagement ID] DefectDojo engagement id" \
+    "-s [Service name] Service within product (OPTIONAL)\n" \
+    "-e [Engagement ID] DefectDojo engagement id\n" \
     "-l \t\tList of supported DAST tools"
 }
 
@@ -32,7 +32,7 @@ f_handle_error () {
 
 f_get_product_id () {
     product_name_encode=$(echo "$product_name" | sed 's/ /%20/g')
-    response=$(curl -s -k "$base_url/products/?name=$product_name_encode" \
+    response=$(curl -s -k "$base_url/products/?name_exact=$product_name_encode" \
         -H "$auth_header")
     product_id=$(echo "$response" | grep -o -P '"id":\d+' | cut -d ':' -f2)
 
