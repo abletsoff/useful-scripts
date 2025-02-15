@@ -8,6 +8,7 @@ f_google_extractor () {
 	html=$(curl -k -A "${user_agent}" \
 		"https://www.google.com/search?q=site%3A${domain}+filetype%3A${filetype}"`
 		`"${keyword_operator}&num=100" 2>/dev/null) 
+    echo $html
 	echo $var
 	urls=$(echo $html | grep -o -P \
 		"https?:\/\/[a-z,0-9,\.,\-]*${domain}${url_allowed}*\.(${filetype}|${filetype^^})")

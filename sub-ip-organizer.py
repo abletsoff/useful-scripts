@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import subprocess
 import sys
 import re
 import argparse
@@ -39,19 +40,22 @@ for path, folders, files in os.walk(os.getcwd()):
 ip_addresses = []
 
 filenames = args.addresses
-for filename in filenames:
-    with open(filename) as f:
-        for line in f.readlines():
-            ip_matches = re.findall(ipv4_pattern, line.strip('\n'))
-            for ip in ip_matches:
-                if ip not in ip_addresses:
-                    ip_addresses.append(ip)
+if filenames:
+    for filename in filenames:
+        with open(filename) as f:
+            for line in f.readlines():
+                ip_matches = re.findall(ipv4_pattern, line.strip('\n'))
+                for ip in ip_matches:
+                    if ip not in ip_addresses:
+                        ip_addresses.append(ip)
 
 for ip in ip_addresses:
     if ip not in dictionary.keys():
         dictionary[ip] = ''
 
-for key, value in sorted(dictionary.items()):
-    print(key)
-    for domain in value:
+for ip, domains in sorted(dictionary.items()):
+    netname = subprocess.check_output(f"whois {ip} | grep netname" \
+            "| cut -d ':' -f2 | sed 's/ //g'", shell=True)
+    print(f"{ip} - {netname.strip().decode('utf-8')}")
+    for domain in domains:
         print(f'\t{domain}')

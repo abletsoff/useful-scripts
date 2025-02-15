@@ -1,8 +1,8 @@
 #!/bin/bash
 
-supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan' 'OpenVAS Parser' 'Ubuntu OVAL' 'Snyk Scan' 'Trivy Scan' 'PHP Version Audit' 'Semgrep JSON Report')
-base_url="$DEFECTDOJO_API_URL"
-auth_header="Authorization: Token $DEFECTDOJO_API_KEY"
+supported_tools=('Burp Scan' 'ZAP Scan' 'Nuclei Scan' 'Wpscan' 'Wpscan API Scan' 'OpenVAS Parser' 'Ubuntu OVAL' 'Snyk Scan' 'Trivy Scan' 'PHP Version Audit' 'Semgrep JSON Report' 'Retire.js Scan' 'SonarQube Scan')
+base_url="$DEFECTDOJO_API_URL_EVB"
+auth_header="Authorization: Token $DEFECTDOJO_API_KEY_EVB"
 
 f_print_help () {
     echo -e " DAST results upload to DefectDojo\n\n" \
