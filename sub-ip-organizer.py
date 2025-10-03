@@ -12,6 +12,7 @@ dictionary = {}
 parser = argparse.ArgumentParser()
 parser.add_argument('--domains', nargs='+', type=str, help="Domains")
 parser.add_argument('--addresses', nargs='+', type=str, help="Addresses files")
+parser.add_argument('--output', type=str, help="Output format", default='text')
 args = parser.parse_args()
 domains = args.domains
 if not domains:
@@ -53,9 +54,18 @@ for ip in ip_addresses:
     if ip not in dictionary.keys():
         dictionary[ip] = ''
 
-for ip, domains in sorted(dictionary.items()):
-    netname = subprocess.check_output(f"whois {ip} | grep netname" \
-            "| cut -d ':' -f2 | sed 's/ //g'", shell=True)
-    print(f"{ip} - {netname.strip().decode('utf-8')}")
-    for domain in domains:
-        print(f'\t{domain}')
+if args.output == 'text':
+    for ip, domains in sorted(dictionary.items()):
+        netname = subprocess.check_output(f"whois {ip} | grep netname" \
+                "| cut -d ':' -f2 | sed 's/ //g'", shell=True)
+        print(f"{ip} - {netname.strip().decode('utf-8')}")
+        for domain in domains:
+            print(f'\t{domain}')
+elif args.output == 'csv':
+    print('Domain,IP')
+    for ip, domains in sorted(dictionary.items()):
+        for domain in domains:
+            print(f"{domain},{ip}")
+else:
+    print('Wrong output option')
+    exit(1)
